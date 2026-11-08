@@ -94,7 +94,7 @@ namespace net {
             }
 
 #if defined(SO_NOSIGPIPE)
-            int on = 1;
+            const int on = 1;
             if (::setsockopt(socket.Get(), SOL_SOCKET, SO_NOSIGPIPE, &on, sizeof(on)) != 0)
             {
                 throw NetworkError("setsockopt(SO_NOSIGPIPE)", LastError());
@@ -237,7 +237,7 @@ namespace net {
         Socket listener = CreateSocket(info);
 
 #ifndef _WIN32
-        int on = 1;
+        const int on = 1;
         if (::setsockopt(listener.Get(), SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on)) != 0)
         {
             throw NetworkError("setsockopt(SO_REUSEADDR)", LastError());
