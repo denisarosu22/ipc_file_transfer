@@ -152,7 +152,13 @@ namespace net {
 #ifdef _WIN32
         if (::WSACleanup() != 0)
         {
-            logger::Error("WSACleanup() failed: " + ErrorText(LastError()));
+            try
+            {
+                logger::Error("WSACleanup() failed: " + ErrorText(LastError()));
+            }
+            catch (...)
+            {
+            }
         }
 #endif
     }
