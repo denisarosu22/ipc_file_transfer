@@ -1,0 +1,22 @@
+# Build output
+out/
+build/
+CMakeUserPresets.json
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.pdb
+*.ilk
+*.obj
+*.exe
+*.lib
+
+# IDE settings
+.vscode/
+.idea/
+
+# Files received by the server while testing
+received/
+*.part
