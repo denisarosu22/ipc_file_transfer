@@ -3,6 +3,7 @@
 #include "../common/protocol.h"
 
 #include <algorithm>
+#include <cstdlib>
 #include <cstdint>
 #include <exception>
 #include <filesystem>
@@ -14,6 +15,7 @@
 namespace fs = std::filesystem;
 
 namespace {
+    constexpr int kExitUsageError = 2;
 
     void PrintUsage(const char* program)
     {
@@ -93,18 +95,18 @@ int main(int argc, char* argv[])
     if (argc < 2 || argc > 4)
     {
         PrintUsage(argc > 0 ? argv[0] : "file_client");
-        return 2;
+        return kExitUsageError;
     }
 
     try
     {
         const fs::path filePath = fs::path(argv[1]);
-        const std::string host = argc > 2 ? argv[2] : "127.0.0.1";
+        const std::string host = argc > 2 ? argv[2] : protocol::kDefaultHost;
         const std::string port = argc > 3 ? argv[3] : protocol::kDefaultPort;
 
         const net::NetworkInit networkInit;
         SendFile(filePath, host, port);
-        return 0;
+        return EXIT_SUCCESS;
     }
     catch (const std::exception& e)
     {
@@ -114,6 +116,6 @@ int main(int argc, char* argv[])
     {
         logger::Error("unknown exception");
     }
-    return 1;
+    return EXIT_FAILURE;
 }
 

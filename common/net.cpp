@@ -2,6 +2,7 @@
 #include "log.h"
 
 #include <algorithm>
+#include <array>
 #include <cerrno>
 #include <memory>
 #include <system_error>
@@ -104,12 +105,13 @@ namespace net {
 
         std::string DescribeAddress(const sockaddr_in& address)
         {
-            char ip[INET_ADDRSTRLEN] = {};
-            if (::inet_ntop(AF_INET, &address.sin_addr, ip, sizeof(ip)) == nullptr)
+            std::array<char, INET_ADDRSTRLEN> ip{};
+            if (::inet_ntop(AF_INET, &address.sin_addr, ip.data(), ip.size()) == nullptr)
+           
             {
                 return "<unknown>";
             }
-            return std::string(ip) + ":" + std::to_string(ntohs(address.sin_port));
+            return std::string(ip.data()) + ":" + std::to_string(ntohs(address.sin_port));
         }
 
     } // namespace
@@ -255,7 +257,7 @@ namespace net {
 
     bool WaitForClient(const Socket& listener, int timeoutMs)
     {
-        fd_set readSet;
+        fd_set readSet{};
         FD_ZERO(&readSet);
         FD_SET(listener.Get(), &readSet);
 

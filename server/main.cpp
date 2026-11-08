@@ -3,6 +3,7 @@
 #include "../common/protocol.h"
 
 #include <algorithm>
+#include <cstdlib>
 #include <csignal>
 #include <cstdint>
 #include <exception>
@@ -15,16 +16,21 @@
 namespace fs = std::filesystem;
 
 namespace {
+    constexpr int kExitUsageError = 2;
+    constexpr const char* kDefaultOutputDir = "received";
 
     constexpr int kListenBacklog = 8;
     constexpr int kReceiveTimeoutSeconds = 30;
     constexpr int kAcceptPollMilliseconds = 500;
 
-    volatile std::sig_atomic_t g_stopRequested = 0;
+    // Global because a signal handler cannot receive parameters. Atomic because on
+    // Windows the Ctrl+C handler runs on another thread.
+    std::atomic<bool> g_stopRequested{ false };
+    static_assert(std::atomic<bool>::is_always_lock_free, "needed in a signal handler");
 
     void OnStopSignal(int)
     {
-        g_stopRequested = 1;
+        g_stopRequested = true;
     }
 
     class BadRequest : public std::runtime_error
@@ -192,13 +198,13 @@ int main(int argc, char* argv[])
     if (argc > 3)
     {
         logger::Error(std::string("usage: ") + argv[0] + " [port] [output_dir]");
-        return 2;
+        return kExitUsageError;
     }
 
     try
     {
         const std::string port = argc > 1 ? argv[1] : protocol::kDefaultPort;
-        const fs::path outputDir = argc > 2 ? fs::path(argv[2]) : fs::path("received");
+        const fs::path outputDir = argc > 2 ? fs::path(argv[2]) : fs::path(kDefaultOutputDir);
 
         std::error_code ec;
         fs::create_directories(outputDir, ec);
@@ -232,7 +238,7 @@ int main(int argc, char* argv[])
         }
 
         logger::Info("stop requested, shutting down");
-        return 0;
+        return EXIT_SUCCESS;
     }
     catch (const std::exception& e)
     {
@@ -242,5 +248,5 @@ int main(int argc, char* argv[])
     {
         logger::Error("unknown exception");
     }
-    return 1;
+    return EXIT_FAILURE;
 }
