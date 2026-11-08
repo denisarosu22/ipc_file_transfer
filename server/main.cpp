@@ -3,6 +3,7 @@
 #include "../common/protocol.h"
 
 #include <algorithm>
+#include <atomic>
 #include <cstdlib>
 #include <csignal>
 #include <cstdint>
