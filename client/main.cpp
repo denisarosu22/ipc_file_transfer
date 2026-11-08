@@ -89,6 +89,7 @@ namespace {
 
 int main(int argc, char* argv[])
 {
+    logger::EnableUtf8Console();
     if (argc < 2 || argc > 4)
     {
         PrintUsage(argc > 0 ? argv[0] : "file_client");
@@ -97,7 +98,7 @@ int main(int argc, char* argv[])
 
     try
     {
-        const fs::path filePath = fs::u8path(argv[1]);
+        const fs::path filePath = fs::path(argv[1]);
         const std::string host = argc > 2 ? argv[2] : "127.0.0.1";
         const std::string port = argc > 3 ? argv[3] : protocol::kDefaultPort;
 

@@ -188,6 +188,7 @@ namespace {
 
 int main(int argc, char* argv[])
 {
+    logger::EnableUtf8Console();
     if (argc > 3)
     {
         logger::Error(std::string("usage: ") + argv[0] + " [port] [output_dir]");
@@ -197,7 +198,7 @@ int main(int argc, char* argv[])
     try
     {
         const std::string port = argc > 1 ? argv[1] : protocol::kDefaultPort;
-        const fs::path outputDir = argc > 2 ? fs::u8path(argv[2]) : fs::path("received");
+        const fs::path outputDir = argc > 2 ? fs::path(argv[2]) : fs::path("received");
 
         std::error_code ec;
         fs::create_directories(outputDir, ec);
